@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>半夜要去哪裡玩</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #ff69b4 0%, #000000 50%, #ff1493 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .floating-emojis {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .floating-emoji {
+            position: absolute;
+            font-size: 30px;
+            animation: float 8s linear infinite;
+            opacity: 0.7;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.7;
+            }
+            90% {
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(255, 20, 147, 0.4);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            backdrop-filter: blur(10px);
+            border: 3px solid #ff1493;
+            z-index: 2;
+        }
+
+        .title {
+            font-size: 36px;
+            color: #ff1493;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            font-weight: bold;
+        }
+
+        .main-emoji {
+            font-size: 100px;
+            margin: 20px 0;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-20px);
+            }
+            60% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .action-card {
+            background: linear-gradient(135deg, #ff69b4, #000000);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 20px 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(255, 105, 180, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .action-card:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 8px 20px rgba(255, 105, 180, 0.6);
+        }
+
+        .action-card.selected {
+            background: linear-gradient(135deg, #ff1493, #ff69b4);
+            transform: scale(1.1);
+            box-shadow: 0 10px 25px rgba(255, 20, 147, 0.8);
+        }
+
+        .action-emoji {
+            font-size: 40px;
+        }
+
+        .action-text {
+            font-size: 14px;
+        }
+
+        .go-button {
+            background: linear-gradient(135deg, #000000, #ff1493);
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            font-size: 24px;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+            text-transform: uppercase;
+        }
+
+        .go-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+        }
+
+        .go-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: none;
+            margin: 30px 0;
+            position: relative;
+        }
+
+        .ai-animation {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            margin: 0 auto;
+            animation: spin 1.5s linear infinite;
+        }
+
+        .ai-emoji {
+            position: absolute;
+            font-size: 40px;
+            animation: pulse 1s ease-in-out infinite alternate;
+        }
+
+        .ai-emoji:nth-child(1) { top: 0; left: 55px; animation-delay: 0s; }
+        .ai-emoji:nth-child(2) { top: 20px; right: 10px; animation-delay: 0.2s; }
+        .ai-emoji:nth-child(3) { bottom: 20px; right: 10px; animation-delay: 0.4s; }
+        .ai-emoji:nth-child(4) { bottom: 0; left: 55px; animation-delay: 0.6s; }
+        .ai-emoji:nth-child(5) { bottom: 20px; left: 10px; animation-delay: 0.8s; }
+        .ai-emoji:nth-child(6) { top: 20px; left: 10px; animation-delay: 1s; }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1.2); opacity: 0.6; }
+        }
+
+        .loading-text {
+            color: #ff1493;
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 20px;
+            animation: glow 1.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            0% { text-shadow: 0 0 5px #ff1493; }
+            100% { text-shadow: 0 0 20px #ff1493, 0 0 30px #ff69b4; }
+        }
+
+        .result {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, #ff1493, #000000);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            margin: 20px 0;
+            box-shadow: 0 10px 20px rgba(255, 20, 147, 0.4);
+            border: 3px solid #ff69b4;
+        }
+
+        .result-emoji {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .result-action {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #ff69b4;
+        }
+
+        .result-location {
+            font-size: 32px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .restart-button {
+            background: linear-gradient(135deg, #ff69b4, #000000);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .restart-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 105, 180, 0.4);
+        }
+
+        @media (max-width: 600px) {
+            .action-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .title {
+                font-size: 28px;
+            }
+            
+            .main-emoji {
+                font-size: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-emojis"></div>
+    
+    <div class="container">
+        <h1 class="title">🌙 半夜要去哪裡玩 🌙</h1>
+        
+        <div id="main-section">
+            <div class="main-emoji">🎭</div>
+            
+            <div class="action-grid">
+                <div class="action-card" data-action="喝酒">
+                    <div class="action-emoji">🍺</div>
+                    <div class="action-text">喝酒</div>
+                </div>
+                <div class="action-card" data-action="聊天">
+                    <div class="action-emoji">💬</div>
+                    <div class="action-text">聊天</div>
+                </div>
+                <div class="action-card" data-action="放鬆">
+                    <div class="action-emoji">🧘</div>
+                    <div class="action-text">放鬆</div>
+                </div>
+                <div class="action-card" data-action="隨便">
+                    <div class="action-emoji">🎲</div>
+                    <div class="action-text">隨便</div>
+                </div>
+                <div class="action-card" data-action="看書">
+                    <div class="action-emoji">📚</div>
+                    <div class="action-text">看書</div>
+                </div>
+                <div class="action-card" data-action="運動">
+                    <div class="action-emoji">🏃</div>
+                    <div class="action-text">運動</div>
+                </div>
+            </div>
+            
+            <button class="go-button" id="go-button" disabled>🚀 今晚要去哪 🚀</button>
+        </div>
+        
+        <div id="loading" class="loading">
+            <div class="ai-animation">
+                <div class="ai-emoji">🤖</div>
+                <div class="ai-emoji">⚡</div>
+                <div class="ai-emoji">🔮</div>
+                <div class="ai-emoji">✨</div>
+                <div class="ai-emoji">🎯</div>
+                <div class="ai-emoji">💡</div>
+            </div>
+            <div class="loading-text">🎭 AI正在分析你的夜晚慾望... 🎭</div>
+        </div>
+        
+        <div id="result" class="result">
+            <div class="result-card">
+                <div class="result-emoji" id="result-emoji"></div>
+                <div class="result-action" id="result-action"></div>
+                <div class="result-location" id="result-location"></div>
+            </div>
+            
+            <button class="restart-button" onclick="restartSelection()">🔄 重新選擇 🔄</button>
+        </div>
+    </div>
+
+    <script>
+        // 活動相關的emoji
+        const activityEmojis = ['🍺', '🍷', '🎤', '🎮', '🎯', '🎲', '🎭', '🎪', '🎨', '🎬', '🎵', '🎸', '🎹', '🎺', '🥁', '🎷', '🎻', '🎪', '🎢', '🎡', '🎠', '🎳', '🏓', '🏸', '🏀', '⚽', '🏈', '⚾', '🥎', '🎾', '🏐', '🏉', '🥏', '🎱', '🏒', '🏑', '🏏', '⛳', '🏹', '🎣', '🥊', '🥋', '🎽', '🛹', '🛼', '🎿', '⛷️', '🏂'];
+
+        // 地點資料
+        const locations = [
+            { name: '酒吧', emoji: '🍸' },
+            { name: '夜店', emoji: '🪩' },
+            { name: '溫泉', emoji: '♨️' },
+            { name: 'KTV', emoji: '🎤' },
+            { name: '回你家', emoji: '🏠' },
+            { name: '回我家', emoji: '🏡' },
+            { name: '飯店', emoji: '🏨' },
+            { name: '路邊', emoji: '🛣️' },
+            { name: '公園', emoji: '🌳' },
+            { name: '山上', emoji: '⛰️' },
+            { name: '海邊', emoji: '🏖️' },
+            { name: '深夜誠品書局', emoji: '📚' },
+            { name: '清粥小菜', emoji: '🥣' },
+            { name: '永和豆漿', emoji: '🥛' },
+            { name: '騎UBIKE', emoji: '🚲' }
+        ];
+
+        let selectedAction = '';
+
+        // 創建飄浮emoji
+        function createFloatingEmojis() {
+            const container = document.querySelector('.floating-emojis');
+            
+            setInterval(() => {
+                const emoji = document.createElement('div');
+                emoji.className = 'floating-emoji';
+                emoji.textContent = activityEmojis[Math.floor(Math.random() * activityEmojis.length)];
+                emoji.style.left = Math.random() * 100 + '%';
+                emoji.style.animationDuration = (Math.random() * 4 + 6) + 's';
+                emoji.style.fontSize = (Math.random() * 20 + 20) + 'px';
+                
+                container.appendChild(emoji);
+                
+                setTimeout(() => {
+                    emoji.remove();
+                }, 8000);
+            }, 500);
+        }
+
+        // 動作選擇處理
+        document.querySelectorAll('.action-card').forEach(card => {
+            card.addEventListener('click', () => {
+                // 移除所有選中狀態
+                document.querySelectorAll('.action-card').forEach(c => c.classList.remove('selected'));
+                
+                // 選中當前卡片
+                card.classList.add('selected');
+                selectedAction = card.dataset.action;
+                
+                // 啟用按鈕
+                document.getElementById('go-button').disabled = false;
+            });
+        });
+
+        // 開始分析
+        document.getElementById('go-button').addEventListener('click', () => {
+            if (!selectedAction) return;
+            
+            // 隱藏主要區域，顯示載入動畫
+            document.getElementById('main-section').style.display = 'none';
+            document.getElementById('loading').style.display = 'block';
+            
+            // 2秒後顯示結果
+            setTimeout(() => {
+                showResult();
+            }, 2000);
+        });
+
+        function showResult() {
+            // 隨機選擇地點
+            const randomLocation = locations[Math.floor(Math.random() * locations.length)];
+            
+            // 動作對應的emoji
+            const actionEmojis = {
+                '喝酒': '🍺',
+                '聊天': '💬',
+                '放鬆': '🧘',
+                '隨便': '🎲',
+                '看書': '📚',
+                '運動': '🏃'
+            };
+            
+            // 隱藏載入動畫
+            document.getElementById('loading').style.display = 'none';
+            
+            // 顯示結果
+            document.getElementById('result-emoji').textContent = randomLocation.emoji;
+            document.getElementById('result-action').textContent = `今晚想${selectedAction} ${actionEmojis[selectedAction]}`;
+            document.getElementById('result-location').textContent = `就去 ${randomLocation.name} 吧！`;
+            
+            document.getElementById('result').style.display = 'block';
+        }
+
+        function restartSelection() {
+            // 重置選擇
+            selectedAction = '';
+            document.querySelectorAll('.action-card').forEach(c => c.classList.remove('selected'));
+            document.getElementById('go-button').disabled = true;
+            
+            // 隱藏結果，顯示主要區域
+            document.getElementById('result').style.display = 'none';
+            document.getElementById('main-section').style.display = 'block';
+        }
+
+        // 初始化
+        createFloatingEmojis();
+    </script>
+</body>
+</html>
